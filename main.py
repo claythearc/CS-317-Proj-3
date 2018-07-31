@@ -10,14 +10,13 @@ import typing
 import builtins
 from collections import defaultdict
 import math
-# both of these will say unused imports; however, they are used for accessing object types
-# and for typehinting to work for development
+
 
 
 class Graph:
-    """ Default constructor that builds the Graph """
 
     def __init__(self):
+        """ Default constructor that builds the Graph """
         self.root = list()  # type: list('Node')
         self.nodeset = set()  # type: set('Node')
         self.size = len(self.nodeset)  # type: int, holds # of unique vertexes
@@ -32,17 +31,19 @@ class Graph:
         self.size = len(self.nodeset)
         self.sort()
 
+    def goto_node(self, k: str):
+        for k,v in self.distances.get(k):
+            pass
+
     def debug(self, key: str):
         vertexleft = self.nodeset.copy()
         while vertexleft:
             shortestpath = defaultdict(list)  # type: defaultdict(list)
             nearest = (None, math.inf)  # type: tuple
-            visited = dict()  # type: dict
+            visited = defaultdict(list)  # type: defaultdict(list)
             finding = list(vertexleft)[0]
             for k,v in self.distances.get(key):
-                if (k == finding[0]) and (nearest[1] > v):
-                    nearest = (k, v)
-                vertexleft.remove(finding)
+                self.goto_node(k)
 
     def __str__(self):
         """Overrides the dunder str method so that I can call print(Graph) directly
