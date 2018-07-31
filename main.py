@@ -31,9 +31,14 @@ class Graph:
         self.size = len(self.nodeset)
         self.sort()
 
-    def goto_node(self, k: str):
-        for k,v in self.distances.get(k):
-            pass
+    def buildadj(self, dicts: defaultdict(list)):
+        for k, v in dicts.items():
+            if isinstance(v, dict):
+                print(isinstance(v, dict))
+                self.buildadj(v)
+            else:
+                print
+                "{0} : {1}".format(k, v)
 
     def debug(self, key: str):
         vertexleft = self.nodeset.copy()
@@ -42,9 +47,8 @@ class Graph:
             nearest = (None, math.inf)  # type: tuple
             visited = defaultdict(list)  # type: defaultdict(list)
             finding = list(vertexleft)[0]
-            for k,v in self.distances.get(key):
-                self.goto_node(k)
-
+            k,v = self.distances.items()
+            print(f"{k} {v}")
     def __str__(self):
         """Overrides the dunder str method so that I can call print(Graph) directly
         Basically it creates a list of the desired output """
@@ -140,11 +144,61 @@ def kruskal(krusgraph: Graph):  # method to perform Kruskal's algorithm
     return adjmat  # return the Adjacency Object containing the mst
 
 
+class DijGraph:
+    def __init__(self):
+        self.nodes = set()
+        self.edges = defaultdict(list)
+        self.distance = {}
+
+    def add_node(self, value):
+        self.nodes.add(value)
+        return self
+
+    def add_edge(self, from_node, to_node, distance):
+        self.edges[from_node].append(to_node)
+        self.edges[to_node].append(from_node)
+        self.distance[(from_node, to_node)] = distance
+        return self
+
+
+def dijsktra(graph, initial):
+    visited = {initial: 0}
+    path = {}
+    nodes = set(graph.nodes)
+    while nodes:
+        min_node = None
+        for node in nodes:
+            if node in visited:
+                if min_node is None:
+                    min_node = node
+                elif visited[node] < visited[min_node]:
+                    min_node = node
+        if min_node is None:
+            break
+        nodes.remove(min_node)
+        current_weight = visited[min_node]
+        for edge in graph.edges[min_node]:
+            try:
+                weight = current_weight + graph.distance[(min_node, edge)]
+            except:
+                continue
+            if edge not in visited or weight < visited[edge]:
+                visited[edge] = weight
+                path[edge] = min_node
+    return visited, path
+
+
 if __name__ == "__main__":
     Gr = Graph()
+    DG = DijGraph()
     with open("small.txt") as f:
         for line in f:
+            DG.add_node(*line.strip().split(",")[0])
+            DG.add_node(*line.strip().split(",")[1])
+            DG.add_edge(*line.strip().split(","))
             Gr.addNode(*line.strip().split(","))
             # print(Gr)
-    Gr.debug("a")
+    _, path = dijsktra(DG, "e")
+    print(path)
+    #Gr.buildadj(Gr.distances)
     # kruskal(Gr).print()
