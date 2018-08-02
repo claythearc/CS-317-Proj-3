@@ -8,9 +8,8 @@ Kruskal's Algoritm and Djikstras
 
 import typing
 import builtins
-from collections import defaultdict
+from collections import defaultdict, namedtuple, deque
 import math
-
 
 
 class Graph:
@@ -22,9 +21,11 @@ class Graph:
         self.size = len(self.nodeset)  # type: int, holds # of unique vertexes
         self.distances = defaultdict(list)  # type: defaultdict(list)
 
-    def addNode(self, node1: str, node2: str, weight: int):
+    def addNode(self, node1: str, node2: str, weight: int, both = True):
         """Add a node into the Graph, and then sort the list"""
         self.distances[node1].append([node2, weight])
+        if(both):
+            self.distances[node2].append([node2, weight])
         self.root.append(Node(node1, node2, weight))
         self.nodeset.add(node1)
         self.nodeset.add(node2)
@@ -49,6 +50,17 @@ class Graph:
         """Sort method that calls the .sort() method to map each element by the nodes weight. Then do not reverse
         So it stays in Non Decresasing order."""
         self.root.sort(key=lambda x: x.weight, reverse=False)
+
+    def debug(self):
+        for k,v in self.distances.items():
+            print(f"Key: {k} Value: {v}")
+
+
+    def neighbor(self, parent):
+        for k,v in self.distances.items():
+            if parent in k:
+                for path in v:
+                    yield path
 
 
 class Node:
@@ -127,71 +139,44 @@ def kruskal(krusgraph: Graph):
     return adjmat  # return the Adjacency Object containing the mst
 
 
-class DijGraph:
-    """ Class holding a slightly different type of graph
-    for Dijkstra's algorithm """
-    def __init__(self):
-        """Constructor for DijGraph class, initializes variables"""
-        self.nodes = set()  # type: set(str)
-        self.edges = defaultdict(list)  # type: defaultdict(list)
-        self.distance = {}  # type: dict
-
-    def add_edge(self, from_node: str, to_node: str, distance: int):
-        """adds an edge / path between two nodes """
-        self.nodes.add(from_node)
-        self.nodes.add(to_node)
-        self.edges[from_node].append(to_node)  # add an entry into the dict holding pathways between nodes
-        self.edges[to_node].append(from_node)
-        self.distance[(from_node, to_node)] = int(distance)  # set the distance
-        return self
-
-    def __str__(self):
-        """overrides the str() method for DijGraph class
-        To easily allow for printing of the object """
-        nodelist = []  # type: list
-        for item in self.nodes:  # loop over the set of nodes
-            nodelist.append(item)  # append its name to the list
-        return str(nodelist)  # return the list of nodes as a string
+class Edge(namedtuple('Edge', 'start, end, cost')):
+    def __new__(cls, start: str, end: str, cost: int):
+        cls.start = start
+        cls.end = end
+        cls.cost = cost
+        return super(Edge, cls).__new__(cls, start, end, cost)
 
 
-def dijkstra(graph: DijGraph, initial: str):
-    """ Method for perform Dijkstra's algorithm to find the shortest path"""
-    visited = {initial: 0}  # type: dict
-    path = {}  # type: dict
-    nodes = graph.nodes.copy()  # type: set(str)
-    while nodes:  # while there are nodes left to visit
-        min_node = None  # set a baseline node to be used as our comparison
-        for node in nodes:  # for each node in the set
-            if node in visited:  # if the node has been visited already
-                if min_node is None:  # and the min_node is none
-                    min_node = node  # set min_node equal to the current node
-                elif visited[node] < visited[min_node]:  # if the visited node is less than the current small node
-                    min_node = node  # set our node to the current one
-        if min_node is None:  # This should only happen if there are no nodes left to visit
-            break
-        nodes.remove(min_node)  # remove the node from the set as we've found its shortest path
-        current_weight = visited[min_node]  # set the weight equal to the lowest node
-        for edge in graph.edges[min_node]:  # for every edge in the graph
-            try:
-                weight = current_weight + graph.distance[(min_node, edge)]  # see if we can get the new weight
-            except KeyError:  # sometimes, it becomes possible to reach a node without a value
-                continue  # as a result, this catches the exeception of operating on a NoneType
-            if edge not in visited or weight < visited[edge]:  # if the edge hasn't been visited or the weight between
-                # is smaller than other edges, set it as the current and add it to the path
-                visited[edge] = weight
-                path[edge] = min_node
-    return path  # return the shortest path search
+def Dijkstra(graph: Graph, source: str):
+    vertex = set(str())
+    dist = dict()
+    prev = dict()
+    for node in graph.nodeset:
+        dist[node] = math.inf
+        prev[node] = None
+        vertex.add(node)
+    dist[source] = 0
+    while vertex:
+        u = min((item for item in dist.items() if item[0] in vertex), key=lambda i: i[1])[0]
+        vertex.remove(u)
+        for neighbor in graph.neighbor(u): #returns a list [dest, weight]
+            alt = dist[u] + neighbor[1]
+            if alt < dist[neighbor[0]]:
+                dist[neighbor[0]] = alt
+                prev[neighbor[0]] = u
+    return dist, prev
+
+
 
 
 if __name__ == "__main__":
     KrusGraph = Graph()  # initiate instances of my Graph and DijGraph class
-    DijsGraph = DijGraph()
-    with open("Graph.txt") as f:  # open the file in a context manager to avoid memory leaks
+    with open("small.txt") as f:  # open the file in a context manager to avoid memory leaks
         for line in f:  # for every line in the file
             to_node, from_node, weight = line.strip().split(",")  # strip the newline, unpack it based on a "," split
-            DijsGraph.add_edge(to_node, from_node, int(weight))  # add the vertex and nodes
+#            DijsGraph.add_edge(to_node, from_node, int(weight))  # add the vertex and nodes
             KrusGraph.addNode(to_node, from_node, int(weight))  # add the path to the Kruskal Graph
 
-    kruskal(KrusGraph).print()
-    for k,v in dijkstra(DijsGraph, "M").items():
-        print(f"{k} {v}")
+ #   kruskal(KrusGraph).print()
+ #   print(KrusGraph.distances)
+    print(Dijkstra(KrusGraph, "a", "b")[1])
