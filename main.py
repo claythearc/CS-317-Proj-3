@@ -19,11 +19,11 @@ class Graph:
         self.size = len(self.nodeset)  # type: int, holds # of unique vertexes
         self.distances = defaultdict(list)  # type: defaultdict(list)
 
-    def addNode(self, node1: str, node2: str, weight: int, both = True):
+    def addNode(self, node1: str, node2: str, weight: int, both=False):
         """Add a node into the Graph, and then sort the list"""
         self.distances[node1].append([node2, weight])
-        if(both):
-            self.distances[node2].append([node2, weight])
+        if both:
+            self.distances[node2].append([node1, weight])
         self.root.append(Node(node1, node2, weight))
         self.nodeset.add(node1)
         self.nodeset.add(node2)
@@ -169,9 +169,9 @@ if __name__ == "__main__":
 
     mstlist = kruskal(KrusGraph).print()
 
-    costs,paths = Dijkstra(KrusGraph, "M")
+    costs, paths = Dijkstra(KrusGraph, "M")
     strlist = []
-    for k,v in paths.items():
+    for k, v in paths.items():
         temppstr = str()
         tempstr = f"Path: {k}"
         while v:
@@ -179,9 +179,35 @@ if __name__ == "__main__":
             v = paths[v]
         tempstr += f" Distance = {costs[k]}"
         strlist.append(tempstr)
-    print("***********Kruskal*********")
-    for item in mstlist:
-        print(item)
-    print("************Djikstra********")
-    for item in strlist:
-        print(item)
+    with open("output.txt", "a+") as f:
+        f.write("**************Directed*********** \n")
+        f.write("***********Kruskal********* \n")
+        f.write("\n".join(mstlist))
+        f.write("\n************Djikstra******** \n")
+        f.write("\n".join(strlist))
+
+    #Duplicate code to run the graph again, in undirected mode.
+    KrusGraph = Graph()  # initiate instances of my Graph and DijGraph class
+    with open("graph.txt") as f:  # open the file in a context manager to avoid memory leaks
+        for line in f:  # for every line in the file
+            to_node, from_node, weight = line.strip().split(",")  # strip the newline, unpack it based on a "," split
+            KrusGraph.addNode(to_node, from_node, int(weight), both=True)  # add the path to the Kruskal Graph
+
+    mstlist = kruskal(KrusGraph).print()
+
+    costs,paths = Dijkstra(KrusGraph, "M")
+    strlist = []
+    for k, v in paths.items():
+        temppstr = str()
+        tempstr = f"Path: {k}"
+        while v:
+            tempstr += f" <- {v}"
+            v = paths[v]
+        tempstr += f" Distance = {costs[k]}"
+        strlist.append(tempstr)
+    with open("output.txt", "a+") as f:
+        f.write("\n**************Undirected***********\n")
+        f.write("***********Kruskal********* \n")
+        f.write("\n".join(mstlist))
+        f.write("\n************Djikstra******** \n")
+        f.write("\n".join(strlist))

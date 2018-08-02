@@ -1,0 +1,86 @@
+**************Directed*********** 
+***********Kruskal********* 
+MST:
+Q-S weight 1
+D-J weight 2
+C-T weight 3
+T-X weight 4
+M-S weight 6
+P-Q weight 7
+M-R weight 8
+A-M weight 9
+C-W weight 10
+G-X weight 13
+B-L weight 15
+N-T weight 16
+G-V weight 18
+H-R weight 19
+D-K weight 21
+P-Z weight 28
+F-P weight 39
+Total Weight: 219
+************Djikstra******** 
+Path: X <- R <- M Distance = 43
+Path: F Distance = inf
+Path: V <- R <- M Distance = 78
+Path: C Distance = inf
+Path: H Distance = inf
+Path: B Distance = inf
+Path: D Distance = inf
+Path: R <- M Distance = 8
+Path: K Distance = inf
+Path: Q <- M Distance = 29
+Path: P Distance = inf
+Path: G Distance = inf
+Path: L Distance = inf
+Path: S <- M Distance = 6
+Path: T <- S <- M Distance = 40
+Path: W <- T <- S <- M Distance = 98
+Path: J Distance = inf
+Path: N <- M Distance = 71
+Path: A Distance = inf
+Path: Z <- Q <- M Distance = 118
+Path: M Distance = 0
+**************Undirected***********
+***********Kruskal********* 
+MST:
+Q-S weight 1
+D-J weight 2
+C-T weight 3
+T-X weight 4
+M-S weight 6
+P-Q weight 7
+M-R weight 8
+A-M weight 9
+C-W weight 10
+G-X weight 13
+B-L weight 15
+N-T weight 16
+G-V weight 18
+H-R weight 19
+D-K weight 21
+P-Z weight 28
+F-P weight 39
+Total Weight: 219
+************Djikstra******** 
+Path: X <- T <- C <- Q <- S <- M Distance = 28
+Path: F <- P <- Q <- S <- M Distance = 53
+Path: V <- J <- D <- Q <- S <- M Distance = 45
+Path: C <- Q <- S <- M Distance = 21
+Path: H <- R <- M Distance = 27
+Path: B <- J <- D <- Q <- S <- M Distance = 41
+Path: D <- Q <- S <- M Distance = 12
+Path: R <- M Distance = 8
+Path: K <- D <- Q <- S <- M Distance = 33
+Path: Q <- S <- M Distance = 7
+Path: P <- Q <- S <- M Distance = 14
+Path: G <- Q <- S <- M Distance = 39
+Path: L <- S <- M Distance = 29
+Path: S <- M Distance = 6
+Path: T <- C <- Q <- S <- M Distance = 24
+Path: W <- D <- Q <- S <- M Distance = 24
+Path: J <- D <- Q <- S <- M Distance = 14
+Path: N <- T <- C <- Q <- S <- M Distance = 40
+Path: A <- M Distance = 9
+Path: Z <- P <- Q <- S <- M Distance = 42
+Path: M Distance = 0
