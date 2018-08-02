@@ -6,8 +6,6 @@ Kruskal's Algoritm and Djikstras
 
 """
 
-import typing
-import builtins
 from collections import defaultdict, namedtuple, deque
 import math
 
@@ -55,11 +53,11 @@ class Graph:
         for k,v in self.distances.items():
             print(f"Key: {k} Value: {v}")
 
-
-    def neighbor(self, parent):
-        for k,v in self.distances.items():
-            if parent in k:
-                for path in v:
+    def neighbor(self, parent: str):
+        """Return the nodes that neighbor the passed parent object"""
+        for key, value in self.distances.items():
+            if parent in key:
+                for path in value:
                     yield path
 
 
@@ -118,13 +116,14 @@ class MST:
     # if the length of our temp set is == the nodeset-1 then every node except the start point is within our graph
 
     def print(self):
-        """Prints the Minimum Spanning tree. This will become a __str__ override eventually"""
-        print("MST: ")
+        """Outputs the Minimum Spanning tree."""
         total = 0
+        templist = ["MST:"]
         for node in self.mst:
             total += node.weight
-            print("{}-{} weight {}".format(node.node1, node.node2, node.weight))
-        print("Total Weight: {}".format(total))
+            templist.append(f"{node.node1}-{node.node2} weight {node.weight}")
+        templist.append(f"Total Weight: {total}")
+        return templist
 
 
 def kruskal(krusgraph: Graph):
@@ -139,44 +138,50 @@ def kruskal(krusgraph: Graph):
     return adjmat  # return the Adjacency Object containing the mst
 
 
-class Edge(namedtuple('Edge', 'start, end, cost')):
-    def __new__(cls, start: str, end: str, cost: int):
-        cls.start = start
-        cls.end = end
-        cls.cost = cost
-        return super(Edge, cls).__new__(cls, start, end, cost)
-
-
 def Dijkstra(graph: Graph, source: str):
-    vertex = set(str())
+    """Algorithm for performing Djikstra's algorithm"""
+    vertex = set(str())  # variable initialization
     dist = dict()
     prev = dict()
-    for node in graph.nodeset:
+    for node in graph.nodeset:  # return the nodes in the graph, just the names and do initialization
         dist[node] = math.inf
         prev[node] = None
         vertex.add(node)
-    dist[source] = 0
-    while vertex:
+    dist[source] = 0  # set initial distance 0
+    while vertex:  # while there are verticies to look over
+        # pick the smallest thats still in our set
         u = min((item for item in dist.items() if item[0] in vertex), key=lambda i: i[1])[0]
-        vertex.remove(u)
-        for neighbor in graph.neighbor(u): #returns a list [dest, weight]
-            alt = dist[u] + neighbor[1]
-            if alt < dist[neighbor[0]]:
-                dist[neighbor[0]] = alt
+        vertex.remove(u)  # remove the one we picked
+        for neighbor in graph.neighbor(u): #returns a list [dest, weight] of its neighbors
+            alt = dist[u] + neighbor[1]  # temp variable for its distance
+            if alt < dist[neighbor[0]]:  # if the distance is more than our current one
+                dist[neighbor[0]] = alt  # update the dicts
                 prev[neighbor[0]] = u
-    return dist, prev
-
-
+    return dist, prev  # return our dictionaries
 
 
 if __name__ == "__main__":
     KrusGraph = Graph()  # initiate instances of my Graph and DijGraph class
-    with open("small.txt") as f:  # open the file in a context manager to avoid memory leaks
+    with open("graph.txt") as f:  # open the file in a context manager to avoid memory leaks
         for line in f:  # for every line in the file
             to_node, from_node, weight = line.strip().split(",")  # strip the newline, unpack it based on a "," split
-#            DijsGraph.add_edge(to_node, from_node, int(weight))  # add the vertex and nodes
             KrusGraph.addNode(to_node, from_node, int(weight))  # add the path to the Kruskal Graph
 
- #   kruskal(KrusGraph).print()
- #   print(KrusGraph.distances)
-    print(Dijkstra(KrusGraph, "a", "b")[1])
+    mstlist = kruskal(KrusGraph).print()
+
+    costs,paths = Dijkstra(KrusGraph, "M")
+    strlist = []
+    for k,v in paths.items():
+        temppstr = str()
+        tempstr = f"Path: {k}"
+        while v:
+            tempstr += f" <- {v}"
+            v = paths[v]
+        tempstr += f" Distance = {costs[k]}"
+        strlist.append(tempstr)
+    print("***********Kruskal*********")
+    for item in mstlist:
+        print(item)
+    print("************Djikstra********")
+    for item in strlist:
+        print(item)
