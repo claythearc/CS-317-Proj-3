@@ -167,8 +167,6 @@ if __name__ == "__main__":
             to_node, from_node, weight = line.strip().split(",")  # strip the newline, unpack it based on a "," split
             KrusGraph.addNode(to_node, from_node, int(weight))  # add the path to the Kruskal Graph
 
-    mstlist = kruskal(KrusGraph).print()
-
     costs, paths = Dijkstra(KrusGraph, "M")
     strlist = []
     for k, v in paths.items():
@@ -181,8 +179,6 @@ if __name__ == "__main__":
         strlist.append(tempstr)
     with open("output.txt", "a+") as f:
         f.write("**************Directed*********** \n")
-        f.write("***********Kruskal********* \n")
-        f.write("\n".join(mstlist))
         f.write("\n************Djikstra******** \n")
         f.write("\n".join(strlist))
 
