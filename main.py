@@ -1,7 +1,7 @@
 """
 Clayton A. Turner
 CS 317 Project 3
-Python 3.7 but should work on any Python 3.X
+Python 3.7 but should work on any Python 3.6+ due to f-string usage
 Kruskal's Algoritm and Djikstras
 
 """
